@@ -20,31 +20,36 @@ public partial class NewAccountPage : ContentPage
 
     async void CreateAccount_OnClicked(object sender, EventArgs e)
     {
+        var username = txtEmail.Text?.Trim();
+        var password = txtPassword1.Text;
+        var email = txtEmail.Text?.Trim();
         
-        // if password valid
-        if(txtPassword1.Text == txtPassword2.Text)
+        // if password invalid 
+        if(txtPassword1.Text != txtPassword2.Text)
         {
-            
+            await DisplayAlert("Error", "Sorry, passwords does not match", "OK");
+            return;
         }
         
         //Is a valid email address = @ .
-        if (txtEmail.Text.Contains("@") && txtEmail.Text.Contains(".") 
-                                        && txtEmail.Text.IndexOf('@') < txtEmail.Text.LastIndexOf('.'))
+        if (!(txtEmail.Text.Contains("@") && txtEmail.Text.Contains(".") 
+                                          && txtEmail.Text.IndexOf('@') < txtEmail.Text.LastIndexOf('.')))
         {
-            
+            await DisplayAlert("Error", "Invalid email address", "OK");
+            return;
         }
-            
-    
-            
+
+        
         // api stuff
-        var data = JsonConvert.SerializeObject(new UserAccount(txtUser.Text, txtPassword1.Text, txtEmail.Text));
+        var data = JsonConvert.SerializeObject(new UserAccount(username, password, email));
 
         var client = new HttpClient();
         var response = await client.PostAsync(new Uri("https://joewetzel.com/fvtc/account/createuser"),
             new StringContent(data, Encoding.UTF8, "application/json"));
         
-        var AccountStatus = response.Content.ReadAsStringAsync().Result;
-
+        // var AccountStatus = (await response.Content.ReadAsStringAsync().Result;
+        var AccountStatus = (await response.Content.ReadAsStringAsync());
+        // await DisplayAlert("DEBUG", $"'{AccountStatus}'", "OK");
         AccountStatus = AccountStatus;
         
         // does the user exist
