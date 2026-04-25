@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -19,20 +20,22 @@ public partial class NewAccountPage : ContentPage
 
     async void CreateAccount_OnClicked(object sender, EventArgs e)
     {
-        // // Do passwords match
-        // if (txtPassword1.Text == txtPassword2.Text)
-        // {
-        //     
-        // }
-        // else if(txtPassword1.Text != txtPassword2.Text)
-        // {
-        //     
-        // }
-        //     
         
-        // Is a valid email address = @ .
-        // if (txtEmail.Text)
+        // if password valid
+        if(txtPassword1.Text == txtPassword2.Text)
+        {
+            
+        }
         
+        //Is a valid email address = @ .
+        if (txtEmail.Text.Contains("@") && txtEmail.Text.Contains(".") 
+                                        && txtEmail.Text.IndexOf('@') < txtEmail.Text.LastIndexOf('.'))
+        {
+            
+        }
+            
+    
+            
         // api stuff
         var data = JsonConvert.SerializeObject(new UserAccount(txtUser.Text, txtPassword1.Text, txtEmail.Text));
 
@@ -53,28 +56,28 @@ public partial class NewAccountPage : ContentPage
         
         // is the email in use
         if (AccountStatus =="email exists")
-        {
+        {response = await client.PostAsync(new Uri("https://joewetzel.com/fvtc/account/login"),
+                         new StringContent(data, Encoding.UTF8, "application/json"));
+                     
+                     var SKey = response.Content.ReadAsStringAsync().Result;
+         
+                     if (!string.IsNullOrEmpty(SKey) && SKey.Length < 50)
+                     {
+                         App.SessionKey = SKey;
+                         Navigation.PopModalAsync();
+                     }
+                     else
+                     {
+                         await DisplayAlert("Error", "Sorry there was an error creating your account!", "OK");
+                         return;
+                     }
             await DisplayAlert("Error", "Sorry this email has already been used", "OK");
             return;
         }
         
         if (AccountStatus == "complete")
         {
-            response = await client.PostAsync(new Uri("https://joewetzel.com/fvtc/account/login"),
-                new StringContent(data, Encoding.UTF8, "application/json"));
             
-            var SKey = response.Content.ReadAsStringAsync().Result;
-
-            if (!string.IsNullOrEmpty(SKey) && SKey.Length < 50)
-            {
-                App.SessionKey = SKey;
-                Navigation.PopModalAsync();
-            }
-            else
-            {
-                await DisplayAlert("Error", "Sorry there was an error creating your account!", "OK");
-                return;
-            }
         }
     }
 }
