@@ -50,7 +50,6 @@ public partial class NewAccountPage : ContentPage
         // var AccountStatus = (await response.Content.ReadAsStringAsync().Result;
         var AccountStatus = (await response.Content.ReadAsStringAsync());
         // await DisplayAlert("DEBUG", $"'{AccountStatus}'", "OK");
-        AccountStatus = AccountStatus;
         
         // does the user exist
         if (AccountStatus=="user exists")
@@ -61,28 +60,28 @@ public partial class NewAccountPage : ContentPage
         
         // is the email in use
         if (AccountStatus =="email exists")
-        {response = await client.PostAsync(new Uri("https://joewetzel.com/fvtc/account/login"),
-                         new StringContent(data, Encoding.UTF8, "application/json"));
-                     
-                     var SKey = response.Content.ReadAsStringAsync().Result;
-         
-                     if (!string.IsNullOrEmpty(SKey) && SKey.Length < 50)
-                     {
-                         App.SessionKey = SKey;
-                         Navigation.PopModalAsync();
-                     }
-                     else
-                     {
-                         await DisplayAlert("Error", "Sorry there was an error creating your account!", "OK");
-                         return;
-                     }
+        {
             await DisplayAlert("Error", "Sorry this email has already been used", "OK");
             return;
         }
         
         if (AccountStatus == "complete")
         {
-            
+            response = await client.PostAsync(new Uri("https://joewetzel.com/fvtc/account/login"),
+                    new StringContent(data, Encoding.UTF8, "application/json"));
+                     
+                var SKey = response.Content.ReadAsStringAsync().Result;
+         
+                if (!string.IsNullOrEmpty(SKey) && SKey.Length < 50)
+                {
+                    App.SessionKey = SKey;
+                    Navigation.PopModalAsync();
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Sorry there was an error creating your account!", "OK");
+                    return;
+                }
         }
     }
 }

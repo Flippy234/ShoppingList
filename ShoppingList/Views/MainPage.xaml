@@ -20,12 +20,22 @@
                 <Entry x:Name="txtInput"/>
             </Border> 
             
-            <Button Grid.Row="0" Grid.Column="1" Text="Add" />
+            <Button Grid.Row="0" Grid.Column="1" Text="Add" Clicked="AddData_OnClicked" />
             <Button Grid.Row="0" Grid.Column="2" Text="Logout" Clicked="Logout_OnClicked" />
             
-            <ListView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" />
+            <ListView IsPullToRefreshEnabled="True" x:Name="lstData" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding dataValue}">
+                            <TextCell.ContextActions>
+                                <MenuItem Clicked="MenuItem_OnClicked" Text="Delete" IsDestructive="True" CommandParameter="{Binding dataID}" />
+                            </TextCell.ContextActions>
+                        </TextCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
             
-            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Text="Clear List"/>
+            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Text="Clear List" Clicked="ClearList_OnClicked" CommandParameter="{Binding userKey}" />
             
         </Grid>
     </ContentPage.Content>
